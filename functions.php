@@ -8,12 +8,25 @@ function get_conexao() {
     return $conexao;
 }
 
-function db_select($comando,$cabecalho=false) {
+function db_select($comando, $array=array(), $cabecalho=false) {
+
+    $comando = !empty($array) ? sf($comando, $array) : $comando;
+    
     $resultado = mysqli_query(get_conexao(), $comando);
     $saida = mysqli_fetch_all($resultado);
+    $lista = array();
+    $campos = campos($resultado);
+
+    array_walk($saida, function($elementoPai, $chavePai) use (&$lista, $campos) {
+        array_walk($elementoPai, function($valor, $chave) use (&$lista, $campos, $chavePai){
+            $lista[$chavePai][$campos[$chave]] = $valor;
+        });
+    });
+
+    $saida = $lista;
 
     if (!empty($cabecalho)) {
-        array_unshift($saida,campos($resultado));
+        array_unshift($saida,$campos);
     }
 
     array_walk_recursive($saida, function(&$item){
@@ -23,9 +36,8 @@ function db_select($comando,$cabecalho=false) {
     return $saida;
 }
 
-function db_select_one($comando,$cabecalho=false) {
-    $retorno = db_select($comando,$cabecalho);
-    print_r($retorno);
+function db_select_one($comando, $array=array(), $cabecalho=false) {
+    $retorno = db_select($comando, $array, $cabecalho);
     if (count($retorno) == 1) {
         $retorno = array_shift($retorno);
     } else {
@@ -42,21 +54,23 @@ function campos($resultado){
     return $saida;
 }
 
-function get_colunas($colunas) {
+function get_colunas($colunas, $codigo="") {
     array_map(function ($coluna) {
         echo "<td>";
         echo $coluna;
         echo "</td>";
     }, $colunas);
     echo "<td>";
-    echo '<a href="detalhes.php?codigo='.$colunas[0].'"><i class="material-icons">face</i></a>';
+    echo '<a style="color:inherit" class="btn btn-detalhes" href="detalhes.php?codigo='.$codigo.'"><i class="material-icons">forward</i></a>';
     echo "</td>";
 }
 
-function get_linhas($tabela){
-    $saida = array_map(function ($linha) {
-        echo '<tr title="Tíitulo: '.$linha[1]. "\n\nDescrição: " . $linha[2].'">';
-        get_colunas($linha);
+function get_linhas($tabela, $configs, $chaves=array()){
+    $saida = array_map(function ($linha) use ($configs, $chaves) {
+        $tr = '<tr ';
+        $tr .= (!empty($configs['title']) ? 'title = "' . sf($configs['title'], $linha) . '">' : '>') ;
+        echo $tr;
+        get_colunas($linha, array_shift($chaves));
         echo '</tr>';
         return 1;
     }, $tabela);
@@ -86,17 +100,30 @@ function monta_cabecalho(&$tabela) {
     return $cabecalho[0];
 }
 
-function monta_corpo(&$tabela) {
+function monta_corpo(&$tabela, $configs, $chaves=array()) {
     echo "<tbody>";
-    $saida = (get_linhas($tabela)) ? 1 : 0;
+    $saida = (get_linhas($tabela, $configs, $chaves)) ? 1 : 0;
     echo "</tbody>";
     return $saida;
 }
 
-function monta_tabela($tabela) {
+function monta_tabela($campos,$tabela, $configs=array()) {
+    $keys_campos = array_keys($campos);
+    $chaves = array();
+    array_walk($tabela, function($valorPai, $chavePai) use ($keys_campos, &$tabela, &$chaves, $configs){
+        array_walk($valorPai, function($valor, $chave) use ($keys_campos, &$tabela, $chavePai, &$chaves, $configs){
+            if($chave == $configs['chave']){
+                $chaves[] = $valor;
+            }
+            if (!in_array($chave, $keys_campos)) {
+                unset($tabela[$chavePai][$chave]);
+            }
+        });
+    });
+    array_unshift($tabela, $campos);
     echo '<table class="table table-striped table-hover">';
     $count_cabecalho = monta_cabecalho($tabela);
-    if (empty(monta_corpo($tabela))) {
+    if (empty(monta_corpo($tabela, $configs, $chaves))) {
         echo '<tr><td style="font-weight:bold;" colspan="'.$count_cabecalho.'"> Nenhum registro encontrado </td><tr>';
     }
     echo '</table>';
@@ -133,4 +160,17 @@ function db_insert($tabela="",$array=array(),$codigo=false) {
         return mysqli_insert_id(get_conexao());
     }
     return $saida;
+}
+
+function echo_r($conteudo) {
+    print_r("<pre>");
+    print_r($conteudo);
+    print_r("</pre>");
+}
+
+function sf($string, $array) {
+    array_walk($array, function ($valor, $chave) use (&$string){
+        $string = str_replace(":".$chave, $valor, $string);
+    });
+    return $string;
 }

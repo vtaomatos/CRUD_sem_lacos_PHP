@@ -35,10 +35,7 @@ require_once('functions.php');
             <label for="slug">Slug:</label>
             <input type="text" id="slug" name="slug" class="form-control col-md-12" maxLength="50">
         </div>
-        <div class="form-group">
-            <input type="hidden" class="btn btn-success" name="cadastrar" value="1">
-        </div>
-
+        
         <br clear="both">
         <br clear="both">
 
@@ -46,7 +43,7 @@ require_once('functions.php');
             <a href="/index.php" class="btn btn-light float-left col-md-2">
                 Cancelar
             </a>
-            <input type="submit" class="btn btn-success float-right col-md-2" value="Cadastrar">
+            <input type="submit" class="btn btn-success float-right col-md-2" name="cadastrar" value="Cadastrar">
         </div>
 
         <br clear="both">

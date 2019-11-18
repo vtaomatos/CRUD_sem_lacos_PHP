@@ -23,8 +23,15 @@ if (!empty($_POST['pesquisar'])) {
             descricao LIKE "%'.$_POST['termo'].'%" OR 
             slug LIKE "%'.$_POST['termo'].'%"
     ';
-    $resultados = db_select($sql, true);
-    monta_tabela($resultados);
+    $resultados = db_select($sql);
+    monta_tabela(array(
+        'id' => 'Código',
+        'titulo' => 'Título',
+        'descricao' => 'Descrição',
+        'slug' => 'Slug'
+    ),$resultados, array(
+        'chave' => 'id'
+    ));
     exit;
 }
 
