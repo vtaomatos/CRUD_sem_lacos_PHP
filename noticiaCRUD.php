@@ -25,7 +25,6 @@ if (!empty($_POST['pesquisar'])) {
     ';
     $resultados = db_select($sql);
     monta_tabela(array(
-        'id' => 'Código',
         'titulo' => 'Título',
         'descricao' => 'Descrição',
         'slug' => 'Slug'
@@ -36,13 +35,17 @@ if (!empty($_POST['pesquisar'])) {
 }
 
 if (!empty($_POST['editar'])) { 
-    $insert = array(
+    $update = array(
         'titulo' => $_POST['titulo'],
         'descricao' => $_POST['descricao'],
         'slug' => $_POST['slug']
     );
-    db_insert('noticia', $insert);
-    header("location:/detalhes.php");
+    $where = array(
+        'id' => $_POST['id']
+    );
+    
+    db_update('noticia', $update, $where);
+    header("location:/detalhes.php?codigo={$_POST['id']}");
 }
 
 if (!empty($_POST['excluir'])) { 

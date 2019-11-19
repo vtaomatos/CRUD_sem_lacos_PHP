@@ -46,6 +46,47 @@ function db_select_one($comando, $array=array(), $cabecalho=false) {
     return $retorno;
 }
 
+function db_update($nome_tabela, $campos, $where) {
+    if (empty($campos)) {
+        exit("PASSAR CAMPOS");
+    }
+    if (empty($nome_tabela)) {
+        exit("PASSAR NOME DA TABELA");
+    }
+    if (empty($where)) {
+        exit("PASSAR WHERE");
+    }
+    $keys = array_keys($campos);
+    $set = array();
+    array_walk($keys, function($valor) use ($campos, &$set){
+        $set[] = $valor . ' = "'. addslashes($campos[$valor]).'"';
+    });
+    $campos = join(", ", $set);
+
+    $keys = array_keys($where);
+    $condicao = array();
+    array_walk($keys, function($valor) use ($where, &$condicao){
+        $condicao[] = $valor . ' = "'. addslashes($where[$valor]).'"';
+    });
+    $where = join(" AND ", $condicao);
+
+    $sql = '
+        UPDATE
+            :nome_tabela
+        SET
+            :campos
+        WHERE
+            :where
+    ';
+    $comando = sf($sql, array(
+        'nome_tabela' => $nome_tabela,
+        'campos' => $campos,
+        'where' => $where
+    ));
+
+    mysqli_query(get_conexao(), utf8_decode($comando));
+}
+
 function campos($resultado){
     $saida = mysqli_fetch_fields($resultado);
     array_walk($saida, function (&$campo) {

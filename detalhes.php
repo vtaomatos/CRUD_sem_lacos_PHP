@@ -38,6 +38,9 @@ $noticia = db_select_one($sql, array(
             .div-slug{
                 font-weight:bold;
             }
+            .slug{
+                margin-right:10px;
+            }
         </style>
 
         <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css" />
@@ -58,7 +61,7 @@ $noticia = db_select_one($sql, array(
             <br clear="both">
             <br clear="both">
             <div class="row div-slug alert alert-primary">
-                <span class="">SLUG:</span> <?php echo $noticia['slug']; ?>
+                <span class="slug">SLUG: </span><?php echo $noticia['slug']; ?>
             </div>
             
 
@@ -68,7 +71,7 @@ $noticia = db_select_one($sql, array(
             <a href="/index.php" class="btn btn-light float-left col-md-2">
                 Listagem
             </a>
-            <a href="/editar.php" class="btn btn-success float-right col-md-2">
+            <a href="/editar.php?codigo=<?php echo $noticia['id']; ?>" class="btn btn-success float-right col-md-2">
                 Editar
             </a>
         </div>

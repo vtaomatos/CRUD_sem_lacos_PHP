@@ -7,18 +7,22 @@ $condicao = array(
 );
 
 if (!empty($_POST['pesquisar'])) {
-    
+    $filtrado = false;
     if (!empty($_POST['id'])) {
-        $condicao[] = 'id LIKE "%'.$_POST['id'].'%"';
+        $condicao[] = 'id = "'.$_POST['id'].'"';
+        $filtrado = true;
     }
     if (!empty($_POST['titulo'])) {
         $condicao[] = 'titulo LIKE "%'.$_POST['titulo'].'%"';
+        $filtrado = true;
     }
     if (!empty($_POST['descricao'])) {
         $condicao[] = 'descricao LIKE "%'.$_POST['descricao'].'%"';
+        $filtrado = true;
     }
     if (!empty($_POST['slug'])) {
         $condicao[] = 'slug LIKE "%'.$_POST['slug'].'%"';
+        $filtrado = true;
     }
 }
 $condicao = join(" AND ", $condicao);
@@ -63,6 +67,9 @@ $noticias = db_select($consulta, array(
             .btn-detalhes{
                 color:inherit;
             }
+            #mostrar-todos{
+                display:none;
+            }
         </style>
     </head>
     <body>
@@ -77,10 +84,11 @@ $noticias = db_select($consulta, array(
             <br clear="both">
             <br clear="both">
 
-            <form class="offset-md-6 col-md-6">
+            <form class="offset-md-4 col-md-8">
                 <div class="clearfix filtro">
-                    <label for="pesquisa" class="col-md-3">Filtro:</label>
-                    <div class="col-md-9 float-right">
+                    <button href="index.php" id="mostrar-todos" class="btn btn-secondary col-md-3">Mostrar Todos</button>
+                    <label for="pesquisa" class="col-md-2">Filtro:</label>
+                    <div class="col-md-6 float-right">
                         <input type="text" id="pesquisa" name="pesquisa" onkeyup="noticia.pesquisa(this.value);" class="form-control form-control-sm">
                     </div>
                 </div>
@@ -127,6 +135,11 @@ $noticias = db_select($consulta, array(
                     });
                     request.done(function(tabela){
                         $(".div-tabela").html(tabela);
+                        if ($("#pesquisa").val() == "") {
+                            $("#mostrar-todos").hide();
+                        } else {
+                            $("#mostrar-todos").show();
+                        }
                     });
                 }
             }

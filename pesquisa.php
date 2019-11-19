@@ -25,12 +25,16 @@ require_once('functions.php');
 
     <form action="index.php" method="POST">
         <div class="form-group">
+            <label for="titulo">Id:</label> 
+            <input type="text" id="id" name="id" class="form-control col-md-12" maxLength="8">
+        </div>
+        <div class="form-group">
             <label for="titulo">Título:</label>
             <input type="text" id="titulo" name="titulo" class="form-control col-md-12" maxLength="255">
         </div>
         <div class="form-group">
             <label for="descricao">Descrição:</label>
-            <textarea name="descricao" id="descricao" class="form-control col-md-12" maxLength="4000" ></textarea>
+            <textarea name="descricao" id="descricao" class="form-control col-md-12" maxLength="4000"></textarea>
         </div>
         <div class="form-group">
             <label for="slug">Slug:</label>
