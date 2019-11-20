@@ -87,6 +87,34 @@ function db_update($nome_tabela, $campos, $where) {
     mysqli_query(get_conexao(), utf8_decode($comando));
 }
 
+function db_delete ($tabela_nome, $where=array()) {
+    if (empty($where)) {
+        exit("PASSE O WHERE");
+    }
+
+    $condicao = array();
+    array_walk($where, function($valor, $chave) use (&$condicao){
+        $condicao[] = $chave . ' = "'. addslashes($valor).'"';
+    });
+
+    $where = join(" AND ", $condicao);
+
+    $sql = '
+        DELETE
+            FROM
+                :tabela
+            WHERE
+                :where
+    ';
+
+    $comando = sf($sql, array(
+        'tabela' => $tabela_nome,
+        'where' => $where
+    ));
+
+    mysqli_query(get_conexao(), utf8_decode($comando));
+}
+
 function campos($resultado){
     $saida = mysqli_fetch_fields($resultado);
     array_walk($saida, function (&$campo) {
@@ -106,8 +134,8 @@ function get_colunas($colunas, $codigo="") {
     echo "</td>";
 }
 
-function get_linhas($tabela, $configs, $chaves=array()){
-    $saida = array_map(function ($linha) use ($configs, $chaves) {
+function get_linhas($tabela, $configs, &$chaves=array()){
+    $saida = array_map(function ($linha) use ($configs, &$chaves) {
         $tr = '<tr ';
         $tr .= (!empty($configs['title']) ? 'title = "' . sf($configs['title'], $linha) . '">' : '>') ;
         echo $tr;
@@ -141,7 +169,7 @@ function monta_cabecalho(&$tabela) {
     return $cabecalho[0];
 }
 
-function monta_corpo(&$tabela, $configs, $chaves=array()) {
+function monta_corpo(&$tabela, $configs, &$chaves=array()) {
     echo "<tbody>";
     $saida = (get_linhas($tabela, $configs, $chaves)) ? 1 : 0;
     echo "</tbody>";

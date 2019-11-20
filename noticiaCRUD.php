@@ -43,17 +43,15 @@ if (!empty($_POST['editar'])) {
     $where = array(
         'id' => $_POST['id']
     );
-    
+
     db_update('noticia', $update, $where);
     header("location:/detalhes.php?codigo={$_POST['id']}");
 }
 
-if (!empty($_POST['excluir'])) { 
-    $insert = array(
-        'titulo' => $_POST['titulo'],
-        'descricao' => $_POST['descricao'],
-        'slug' => $_POST['slug']
+if (!empty($_GET['excluir'])) { 
+    $where = array(
+        'id' => $_GET['excluir']
     );
-    db_insert('noticia', $insert);
+    db_delete('noticia', $where);
     header("location:/index.php");
 }

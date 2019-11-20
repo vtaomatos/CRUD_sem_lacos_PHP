@@ -44,6 +44,7 @@ $noticia = db_select_one($sql, array(
         </style>
 
         <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css" />
+        <script src="js/jquery-3.4.1.js"></script>
     </head>
     <body>
         <div class="container">    
@@ -71,11 +72,31 @@ $noticia = db_select_one($sql, array(
             <a href="/index.php" class="btn btn-light float-left col-md-2">
                 Listagem
             </a>
-            <a href="/editar.php?codigo=<?php echo $noticia['id']; ?>" class="btn btn-success float-right col-md-2">
+            <a href="#modal" data-toggle="modal" data-target="#myModal" class="btn btn-danger float-right col-md-2">
+                Excluir
+            </a>
+            <a href="/editar.php?codigo=<?php echo $noticia['id']; ?>" id="excluir" class="btn btn-success float-right col-md-2">
                 Editar
             </a>
         </div>
 
+        <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Excluir registro</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Ao confirmar, esse registro será removido.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-danger" onclick="location.href='noticiaCRUD.php?excluir=<?php echo $noticia['id']; ?>'">Excluir</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <script src="bootstrap/dist/js/bootstrap.min.js"></script>
     </body>
 </html>
