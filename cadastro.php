@@ -30,6 +30,10 @@ require_once('functions.php');
             
             <br clear="both">
             <br clear="both">
+            
+            <?php if (!empty($_GET['msg'])) { ?>
+                <div class="alert alert-danger"><?php echo $_GET['msg']; ?></div>
+            <?php } ?>
 
             <form action="noticiaCRUD.php" method="POST">
                 <div class="form-group">

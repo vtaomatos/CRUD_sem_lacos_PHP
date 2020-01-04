@@ -3,12 +3,15 @@ require_once('functions.php');
 
 $sql = '
     SELECT
-        id,
-        titulo,
-        descricao,
-        slug
+        n.id,
+        n.titulo,
+        n.descricao,
+        IF(CONCAT(s.slug,"-",s.complemento) IS NOT NULL, CONCAT(s.slug,"-",s.complemento), s.slug) slug,
+        s.id_slug
     FROM
-        noticia
+        noticia n
+    LEFT JOIN 
+        slug s ON s.id_slug = n.id_slug
     WHERE
         id = :codigo
 ';
@@ -27,6 +30,7 @@ $noticia = db_select_one($sql, array(
         </title>
 
         <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css" />
+        <script src="js/jquery-3.4.1.js"></script>
         <style>
             .div-titulo{
                 display: flex;
@@ -47,10 +51,14 @@ $noticia = db_select_one($sql, array(
             <br clear="both">
             <br clear="both">
 
+            <?php if (!empty($_GET['msg'])) { ?>
+                <div class="alert alert-danger"><?php echo $_GET['msg']; ?></div>
+            <?php } ?>
+
             <form action="noticiaCRUD.php" method="POST">
                 <div class="form-group">
                     <label for="titulo">Título:</label>
-                    <input type="text" id="titulo" name="titulo" value="<?php echo $noticia['titulo'] ; ?>" class="form-control col-md-12" maxLength="255">
+                    <input type="text" id="titulo" name="titulo" onkeyup="gera_slug(this.value);" value="<?php echo $noticia['titulo'] ; ?>" class="form-control col-md-12" maxLength="255">
                 </div>
                 <div class="form-group">
                     <label for="descricao">Descrição:</label>
@@ -62,6 +70,7 @@ $noticia = db_select_one($sql, array(
                 </div>
                 
                 <input type="hidden" name="id" value="<?php echo $noticia['id']; ?>">
+                <input type="hidden" name="id_slug" value="<?php echo $noticia['id_slug'] ; ?>">
 
                 <br clear="both">
                 <br clear="both">
@@ -80,5 +89,47 @@ $noticia = db_select_one($sql, array(
         </div>
 
         <script src="bootstrap/dist/js/bootstrap.min.js"></script>
+        <script>
+            if (!String.prototype.slugify) {
+                String.prototype.slugify = function () {
+
+                return  this.toString().toLowerCase()
+                .replace(/[àÀáÁâÂãäÄÅåª]+/g, 'a')       // Special Characters #1
+                .replace(/[èÈéÉêÊëË]+/g, 'e')       	// Special Characters #2
+                .replace(/[ìÌíÍîÎïÏ]+/g, 'i')       	// Special Characters #3
+                .replace(/[òÒóÓôÔõÕöÖº]+/g, 'o')       	// Special Characters #4
+                .replace(/[ùÙúÚûÛüÜ]+/g, 'u')       	// Special Characters #5
+                .replace(/[ýÝÿŸ]+/g, 'y')       		// Special Characters #6
+                .replace(/[ñÑ]+/g, 'n')       			// Special Characters #7
+                .replace(/[çÇ]+/g, 'c')       			// Special Characters #8
+                .replace(/[ß]+/g, 'ss')       			// Special Characters #9
+                .replace(/[Ææ]+/g, 'ae')       			// Special Characters #10
+                .replace(/[Øøœ]+/g, 'oe')       		// Special Characters #11
+                .replace(/[%]+/g, 'pct')       			// Special Characters #12
+                .replace(/\s+/g, '-')           		// Replace spaces with -
+                .replace(/[^\w\-]+/g, '')       		// Remove all non-word chars
+                .replace(/\-\-+/g, '-')         		// Replace multiple - with single -
+                .replace(/^-+/, '')             		// Trim - from start of text
+                .replace(/-+$/, '');            		// Trim - from end of text
+                
+                };
+            }
+            function gera_slug (valor) {
+                var consulta_slug : function (texto) {
+                    var request = jQuery.ajax({
+                        method: "GET",
+                        url: "noticiaCRUD.php",
+                        data: {termo: texto, consultar_slug: 1}
+                    });
+                    request.done(function(resultado){
+                        if (resultado == 0) {
+                            $("#slug").val(valor.slugify());
+                        } else {
+                            $("#slug").val(valor.slugify()+++resultado);
+                        }
+                    });
+                }
+            }
+        </script>
     </body>
 </html>

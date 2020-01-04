@@ -1,5 +1,5 @@
 <?php
-
+ini_set('display_errors',1);
 $conexao = mysqli_connect('localhost','root','', 'teste_backsite');
 
 
@@ -46,7 +46,7 @@ function db_select_one($comando, $array=array(), $cabecalho=false) {
     return $retorno;
 }
 
-function db_update($nome_tabela, $campos, $where) {
+function db_update($nome_tabela, $campos, $where, $echo=false) {
     if (empty($campos)) {
         exit("PASSAR CAMPOS");
     }
@@ -59,14 +59,22 @@ function db_update($nome_tabela, $campos, $where) {
     $keys = array_keys($campos);
     $set = array();
     array_walk($keys, function($valor) use ($campos, &$set){
-        $set[] = $valor . ' = "'. addslashes($campos[$valor]).'"';
+        if ($campos[$valor] == null) {
+            $set[] = $valor . ' = NULL';
+        } else {
+            $set[] = $valor . ' = "'. addslashes($campos[$valor]).'"';
+        }
     });
     $campos = join(", ", $set);
 
     $keys = array_keys($where);
     $condicao = array();
-    array_walk($keys, function($valor) use ($where, &$condicao){
-        $condicao[] = $valor . ' = "'. addslashes($where[$valor]).'"';
+    array_walk($keys, function($valor) use ($where, &$condicao) {
+        if ($where[$valor] == null) {
+            $condicao[] = $valor . ' = NULL';
+        } else {
+            $condicao[] = $valor . ' = "'. addslashes($where[$valor]).'"';
+        }
     });
     $where = join(" AND ", $condicao);
 
@@ -83,6 +91,10 @@ function db_update($nome_tabela, $campos, $where) {
         'campos' => $campos,
         'where' => $where
     ));
+
+    if ($echo) {
+        echo_r($comando);
+    }
 
     mysqli_query(get_conexao(), utf8_decode($comando));
 }
@@ -242,4 +254,26 @@ function sf($string, $array) {
         $string = str_replace(":".$chave, $valor, $string);
     });
     return $string;
+}
+
+function converter_para_slug ($string) {
+    $string = preg_replace("/-+$/", '', $string);            		// Trim - from end of text
+    $string = preg_replace("/^-+/", '', $string);             		// Trim - from start of text
+    $string = preg_replace('/\-\-+/', '-', $string);         		// Replace multiple - with single -
+	$string = preg_replace('/\s+/', '-', $string);           		// Replace spaces with -
+    $string = preg_replace('/[^\w\-]+/', '', $string);       		// Remove all non-word chars
+	$string = preg_replace('/[%]+/', 'pct', $string);       			// Special Characters #12
+	$string = preg_replace('/[Øøœ]+/', 'oe', $string);       		// Special Characters #11
+	$string = preg_replace('/[Ææ]+/', 'ae', $string);       			// Special Characters #10
+	$string = preg_replace('/[ß]+/', 'ss', $string);       			// Special Characters #9
+	$string = preg_replace('/[çÇ]+/', 'c', $string);       			// Special Characters #8
+	$string = preg_replace('/[ñÑ]+/', 'n', $string);       			// Special Characters #7
+	$string = preg_replace('/[ýÝÿŸ]+/', 'y', $string);       		// Special Characters #6
+	$string = preg_replace('/[ùÙúÚûÛüÜ]+/', 'u', $string);       	// Special Characters #5
+	$string = preg_replace('/[òÒóÓôÔõÕöÖº]+/', 'o', $string);       	// Special Characters #4
+    // exit($string);
+	$string = preg_replace('/[ìÌíÍîÎïÏ]+/', 'i', $string);       	// Special Characters #3
+	$string = preg_replace('/[èÈéÉêÊëË]+/', 'e', $string);       	// Special Characters #2
+    $string = preg_replace('/[àÀáÁâÂãäÄÅåª]+/', 'a', $string);
+    return strtolower($string);
 }

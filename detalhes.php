@@ -3,14 +3,16 @@ require_once('functions.php');
 
 $sql = '
     SELECT
-        id,
-        titulo,
-        descricao,
-        slug
+        n.id,
+        n.titulo,
+        n.descricao,
+        IF(CONCAT(s.slug,"-",s.complemento) IS NOT NULL, CONCAT(s.slug,"-",s.complemento), s.slug) slug
     FROM
-        noticia
+        noticia n
+    LEFT JOIN
+        slug s ON s.id_slug = n.id_slug
     WHERE
-        id = ":codigo"
+        n.id = ":codigo"
 ';
 
 $noticia = db_select_one($sql, array(

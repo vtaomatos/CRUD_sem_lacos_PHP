@@ -9,19 +9,30 @@ $condicao = array(
 if (!empty($_POST['pesquisar'])) {
     $filtrado = false;
     if (!empty($_POST['id'])) {
-        $condicao[] = 'id = "'.$_POST['id'].'"';
+        $condicao[] = 'n.id = "'.$_POST['id'].'"';
         $filtrado = true;
     }
     if (!empty($_POST['titulo'])) {
-        $condicao[] = 'titulo LIKE "%'.$_POST['titulo'].'%"';
+        $condicao[] = 'n.titulo LIKE "%'.$_POST['titulo'].'%"';
         $filtrado = true;
     }
     if (!empty($_POST['descricao'])) {
-        $condicao[] = 'descricao LIKE "%'.$_POST['descricao'].'%"';
+        $condicao[] = 'n.descricao LIKE "%'.$_POST['descricao'].'%"';
         $filtrado = true;
     }
     if (!empty($_POST['slug'])) {
-        $condicao[] = 'slug LIKE "%'.$_POST['slug'].'%"';
+        $slug = $_POST['slug'];
+        $slug = explode("-", $slug);
+        $ultimo = $slug[count($slug)-1];
+        $ocorrencias = 0;
+        if (is_numeric($ultimo)) {
+            $ocorrencias = $ultimo;
+            unset($slug[count($slug)-1]);
+        }
+        $slug = join("-", $slug);
+
+        $condicao[] = 's.slug LIKE "%'.$slug.'%"';
+        $condicao[] = 's.complemento LIKE "%'.$ocorrencias.'%"';
         $filtrado = true;
     }
 }
@@ -29,15 +40,20 @@ $condicao = join(" AND ", $condicao);
 
 $consulta = '
     SELECT 
-        *
+        n.*,
+        s.*,
+        IF(CONCAT(s.slug,"-",s.complemento) IS NOT NULL, CONCAT(s.slug,"-",s.complemento), s.slug) slug
     FROM
-        noticia
+        noticia n
+    LEFT JOIN
+        slug s ON s.id_slug = n.id_slug
     WHERE
         :condicao
 ';
 $noticias = db_select($consulta, array(
     'condicao' => $condicao
 ));
+
 
 ?>
 <!DOCTYPE html>
@@ -122,10 +138,18 @@ $noticias = db_select($consulta, array(
             <br clear="both">
         </div>
 
+
+        <a href="testeslug.php?string=Premiação+multishow">Teste slug</a>
+
         <script src="bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="js/jquery-3.4.1.js"></script>
 
         <script>
+            if (($("#pesquisa").val() == "") && ("<?php echo !empty($_POST['pesquisar']) ? $_POST['pesquisar'] : "0" ?>" != "Pesquisar")) {
+                $("#mostrar-todos").hide();
+            } else {
+                $("#mostrar-todos").show();
+            }
             var noticia = {
                 pesquisa : function (texto) {
                     var request = jQuery.ajax({
@@ -135,7 +159,7 @@ $noticias = db_select($consulta, array(
                     });
                     request.done(function(tabela){
                         $(".div-tabela").html(tabela);
-                        if ($("#pesquisa").val() == "") {
+                        if (($("#pesquisa").val() == "") && ("<?php echo !empty($_POST['pesquisar']) ? $_POST['pesquisar'] : "0" ?>" != "Pesquisar")) {
                             $("#mostrar-todos").hide();
                         } else {
                             $("#mostrar-todos").show();
