@@ -115,20 +115,20 @@ $noticia = db_select_one($sql, array(
                 };
             }
             function gera_slug (valor) {
-                var consulta_slug : function (texto) {
-                    var request = jQuery.ajax({
-                        method: "GET",
-                        url: "noticiaCRUD.php",
-                        data: {termo: texto, consultar_slug: 1}
-                    });
-                    request.done(function(resultado){
-                        if (resultado == 0) {
-                            $("#slug").val(valor.slugify());
-                        } else {
-                            $("#slug").val(valor.slugify()+++resultado);
-                        }
-                    });
-                }
+                var request = jQuery.ajax({
+                    method: "GET",
+                    url: "noticiaCRUD.php",
+                    data: {termo: valor, consultar_slug: 1}
+                });
+                request.done(function(resultado){
+                    if (resultado == 0) {
+                        $("#slug").val(valor.slugify());
+                    } else {
+                        alert(resultado);
+                        ++resultado;
+                        $("#slug").val(valor.slugify()+resultado);
+                    }
+                });
             }
         </script>
     </body>

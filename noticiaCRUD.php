@@ -170,7 +170,7 @@ if (!empty($_GET['excluir'])) {
 }
 
 if (!empty($_GET['consultar_slug'])) {
-    $slug = $_POST['slug'];
+    $slug = $_GET['termo'];
     $slug = explode("-", $slug);
     $ultimo = $slug[count($slug)-1];
     $ocorrencias = null;
@@ -219,9 +219,9 @@ if (!empty($_GET['consultar_slug'])) {
         $complemento = db_select_one($sql, array(
             'slug' => $slug
         ));
-        $slug = $slug."-".$complemento['total'];
+        $slug = $slug."-".$complemento['proximo'];
     } else {
-        $slug = $slug."-".$complemento;
+        $slug = $slug."-".$ocorrencias;
     }
     return($slug);
 
