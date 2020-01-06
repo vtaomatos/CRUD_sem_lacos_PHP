@@ -118,16 +118,10 @@ $noticia = db_select_one($sql, array(
                 var request = jQuery.ajax({
                     method: "GET",
                     url: "noticiaCRUD.php",
-                    data: {termo: valor, consultar_slug: 1}
+                    data: {termo: valor.slugify(), consultar_slug: 1}
                 });
                 request.done(function(resultado){
-                    if (resultado == 0) {
-                        $("#slug").val(valor.slugify());
-                    } else {
-                        alert(resultado);
-                        ++resultado;
-                        $("#slug").val(valor.slugify()+resultado);
-                    }
+                    $("#slug").val(resultado);
                 });
             }
         </script>

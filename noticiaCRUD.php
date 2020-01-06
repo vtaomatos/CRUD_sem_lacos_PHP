@@ -208,21 +208,20 @@ if (!empty($_GET['consultar_slug'])) {
     if (!empty($slugs['total'])) {
         $sql = '
             SELECT
-                MAX(complemento)+1 proximo
+                COALESCE(MAX(complemento),0)+1 proximo
             FROM
-                noticia
+                slug
             WHERE
                 slug = ":slug"
             LIMIT
                 1
-        ';
+        ';                                                                                         
+
         $complemento = db_select_one($sql, array(
             'slug' => $slug
         ));
         $slug = $slug."-".$complemento['proximo'];
-    } else {
-        $slug = $slug."-".$ocorrencias;
     }
-    return($slug);
+    exit($slug);
 
 }
