@@ -37,6 +37,18 @@ $noticia = db_select_one($sql, array(
                 flex-wrap: wrap;
                 justify-content: center;
             }
+            .sug-slug-title{
+                color:red;
+                font-weight:bold;
+            }
+            .sug-slug-description{
+                font-weight:bold;
+            }
+            .slug-infos{
+                display:flex;
+                flex-direction:row;
+                justify-content:space-between;
+            }
         </style>
     </head>
     <body>
@@ -62,13 +74,16 @@ $noticia = db_select_one($sql, array(
                 </div>
                 <div class="form-group">
                     <label for="descricao">Descrição:</label>
-                    <textarea name="descricao" id="descricao" class="form-control col-md-12" maxLength="4000" ><?php echo $noticia['descricao'] ; ?></textarea>
+                    <textarea name="descricao" id="descricao" class="form-control col-md-12" maxLength="4000" rows="7"><?php echo $noticia['descricao'] ; ?></textarea>
                 </div>
                 <div class="form-group">
                     <label for="slug">Slug:</label>
                     <input type="text" id="slug" name="slug" value="<?php echo $noticia['slug'] ; ?>" class="form-control col-md-12" maxLength="50">
                 </div>
-                
+                <div class="slug-infos">
+                    <span class="sug-slug-title">Sugestão de Slug: </span><span id="sug-slug" class="sug-slug-description"></span>
+                    <button type="button" id="aceita-sugestao" class="btn btn-primary col-md-3" disabled>Aceitar sugestão de slug</button>
+                </div>
                 <input type="hidden" name="id" value="<?php echo $noticia['id']; ?>">
                 <input type="hidden" name="id_slug" value="<?php echo $noticia['id_slug'] ; ?>">
 
@@ -121,9 +136,24 @@ $noticia = db_select_one($sql, array(
                     data: {termo: valor.slugify(), consultar_slug: 1}
                 });
                 request.done(function(resultado){
-                    $("#slug").val(resultado);
+                    $("#sug-slug").html(resultado);
+                    if (resultado.length > 0) {
+                        $("#aceita-sugestao").prop("disabled",false);
+                    } else {
+                        $("#aceita-sugestao").prop("disabled", true);
+                    }
                 });
             }
+
+            $("#aceita-sugestao").click(function () {
+                if (confirm("Alterar o slug?")) {
+                    $("#slug").val($("#sug-slug").html());
+                    $("#sug-slug").html("");
+                }
+            });
+
+
+
         </script>
     </body>
 </html>
