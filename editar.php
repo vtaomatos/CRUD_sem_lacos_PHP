@@ -59,9 +59,6 @@ $noticia = db_select_one($sql, array(
             <div class="row div-titulo">
                 <h1>Cadastro de Notícias</h1>
             </div>
-            
-            <br clear="both">
-            <br clear="both">
 
             <?php if (!empty($_GET['msg'])) { ?>
                 <div class="alert alert-danger"><?php echo $_GET['msg']; ?></div>

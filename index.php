@@ -138,9 +138,6 @@ $noticias = db_select($consulta, array(
             <br clear="both">
         </div>
 
-
-        <a href="testeslug.php?string=Premiação+multishow">Teste slug</a>
-
         <script src="bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="js/jquery-3.4.1.js"></script>
 

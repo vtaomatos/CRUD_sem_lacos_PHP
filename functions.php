@@ -1,10 +1,13 @@
 <?php
 ini_set('display_errors',1);
-$conexao = mysqli_connect('localhost','root','', 'teste_backsite');
+$conexao = mysqli_connect('localhost','root','', 'crud_sem_lacos');
 
 
 function get_conexao() {
     global $conexao;
+    if (!$conexao) {
+        exit("Conexão inválida");
+    }
     return $conexao;
 }
 
@@ -254,26 +257,4 @@ function sf($string, $array) {
         $string = str_replace(":".$chave, $valor, $string);
     });
     return $string;
-}
-
-function converter_para_slug ($string) {
-    $string = preg_replace("/-+$/", '', $string);            		// Trim - from end of text
-    $string = preg_replace("/^-+/", '', $string);             		// Trim - from start of text
-    $string = preg_replace('/\-\-+/', '-', $string);         		// Replace multiple - with single -
-	$string = preg_replace('/\s+/', '-', $string);           		// Replace spaces with -
-    $string = preg_replace('/[^\w\-]+/', '', $string);       		// Remove all non-word chars
-	$string = preg_replace('/[%]+/', 'pct', $string);       			// Special Characters #12
-	$string = preg_replace('/[Øøœ]+/', 'oe', $string);       		// Special Characters #11
-	$string = preg_replace('/[Ææ]+/', 'ae', $string);       			// Special Characters #10
-	$string = preg_replace('/[ß]+/', 'ss', $string);       			// Special Characters #9
-	$string = preg_replace('/[çÇ]+/', 'c', $string);       			// Special Characters #8
-	$string = preg_replace('/[ñÑ]+/', 'n', $string);       			// Special Characters #7
-	$string = preg_replace('/[ýÝÿŸ]+/', 'y', $string);       		// Special Characters #6
-	$string = preg_replace('/[ùÙúÚûÛüÜ]+/', 'u', $string);       	// Special Characters #5
-	$string = preg_replace('/[òÒóÓôÔõÕöÖº]+/', 'o', $string);       	// Special Characters #4
-    // exit($string);
-	$string = preg_replace('/[ìÌíÍîÎïÏ]+/', 'i', $string);       	// Special Characters #3
-	$string = preg_replace('/[èÈéÉêÊëË]+/', 'e', $string);       	// Special Characters #2
-    $string = preg_replace('/[àÀáÁâÂãäÄÅåª]+/', 'a', $string);
-    return strtolower($string);
 }

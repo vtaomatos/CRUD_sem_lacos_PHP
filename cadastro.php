@@ -28,9 +28,6 @@ require_once('functions.php');
                 <h1>Cadastro de Notícias</h1>
             </div>
             
-            <br clear="both">
-            <br clear="both">
-            
             <?php if (!empty($_GET['msg'])) { ?>
                 <div class="alert alert-danger"><?php echo $_GET['msg']; ?></div>
             <?php } ?>
@@ -42,7 +39,7 @@ require_once('functions.php');
                 </div>
                 <div class="form-group">
                     <label for="descricao">Descrição:</label>
-                    <textarea name="descricao" id="descricao" class="form-control col-md-12" maxLength="4000" ></textarea>
+                    <textarea name="descricao" id="descricao" class="form-control col-md-12" maxLength="4000" rows="7"></textarea>
                 </div>
                 <div class="form-group">
                     <label for="slug">Slug:</label>
