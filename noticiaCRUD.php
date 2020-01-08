@@ -42,19 +42,20 @@ if (!empty($_POST['cadastrar'])) {
         header("location:cadastro.php?msg=$msg");
         exit;
     }
-    
-    $insert = array (
-        'slug' => $_POST['slug']
-    );
-    $cd_slug = db_insert('slug', $insert, true);
-    
+
     $insert = array(
         'titulo' => $_POST['titulo'],
         'descricao' => $_POST['descricao'],
-        'id_slug' => $cd_slug
     );
-    db_insert('noticia', $insert);
+    $cd_noticia = db_insert('noticia', $insert, true);
+    
+    $insert = array (
+        'slug' => $_POST['slug'],
+        'id_noticia' => $cd_noticia
+    );
+    db_insert('slug', $insert, true);
     header("location:/index.php");
+    exit;
 }
 
 if (!empty($_POST['pesquisar'])) { 
@@ -66,7 +67,7 @@ if (!empty($_POST['pesquisar'])) {
         FROM
             noticia n
         INNER JOIN
-            slug s ON s.id_slug = n.id_slug
+            slug s ON s.id_noticia = n.id
         WHERE
             n.id LIKE "%'.$_POST['termo'].'%" OR
             n.titulo LIKE "%'.$_POST['termo'].'%" OR
@@ -127,12 +128,24 @@ if (!empty($_POST['editar'])) {
         exit;
     }
     
+    $update = array(
+        'titulo' => $_POST['titulo'],
+        'descricao' => $_POST['descricao'],
+        // 'id_slug' => $id_slug
+    );
+    $where = array(
+        'id' => $_POST['id']
+    );
+
+    db_update('noticia', $update, $where);
+    
     if (!empty($_POST['id_slug'])) {
         $where = array(
             'id_slug' => $id_slug
         );
         $update = array(
             'slug' => $slug,
+            'id_noticia' => $_POST['id']
         );
         if ($ocorrencias != null) {
             $update['complemento'] =  $ocorrencias;
@@ -143,21 +156,12 @@ if (!empty($_POST['editar'])) {
         db_update('slug', $update, $where, true);
     } else {
         $insert = array(
-            'slug' => $slug
+            'slug' => $slug,
+            'id_noticia' => $_POST['id']
         );
         $id_slug = db_insert('slug', $insert, true);
     }
     
-    $update = array(
-        'titulo' => $_POST['titulo'],
-        'descricao' => $_POST['descricao'],
-        'id_slug' => $id_slug
-    );
-    $where = array(
-        'id' => $_POST['id']
-    );
-
-    db_update('noticia', $update, $where);
     header("location:/detalhes.php?codigo={$_POST['id']}");
 }
 

@@ -21,18 +21,15 @@ CREATE TABLE IF NOT EXISTS `noticia` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `titulo` varchar(255) COLLATE latin1_general_ci DEFAULT NULL,
   `descricao` longtext COLLATE latin1_general_ci,
-  `id_slug` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `FK_noticia_slug` (`id_slug`),
-  CONSTRAINT `FK_noticia_slug` FOREIGN KEY (`id_slug`) REFERENCES `slug` (`id_slug`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
--- Copiando dados para a tabela crud_sem_lacos.noticia: ~3 rows (aproximadamente)
+-- Copiando dados para a tabela crud_sem_lacos.noticia: ~4 rows (aproximadamente)
 /*!40000 ALTER TABLE `noticia` DISABLE KEYS */;
-REPLACE INTO `noticia` (`id`, `titulo`, `descricao`, `id_slug`) VALUES
-	(5, 'Testando complemento de slug', 'Estou editando essa notícia com o gerador de slug.', 1),
-	(6, 'Testando complemento ', 'Vitor Augusto de Matos consegue fazer desafio de inserção de noticias.\r\nEsse desafio tem uma descrição com:\r\nQuebra de linhas;\r\nAcentuação;\r\nEtc..', 2),
-	(13, 'Testando complemento de slug', 'AÇÃO', 3);
+REPLACE INTO `noticia` (`id`, `titulo`, `descricao`) VALUES
+	(5, 'Testando complemento de slug', 'Estou editando essa notícia com o gerador de slug.'),
+	(6, 'Testando complemento ', 'Vitor Augusto de Matos consegue fazer desafio de inserção de noticias.\r\nEsse desafio tem uma descrição com:\r\nQuebra de linhas;\r\nAcentuação;\r\nEtc..'),
+	(13, 'Testando complemento de slug', 'AÇÃO');
 /*!40000 ALTER TABLE `noticia` ENABLE KEYS */;
 
 -- Copiando estrutura para tabela crud_sem_lacos.slug
@@ -40,15 +37,18 @@ CREATE TABLE IF NOT EXISTS `slug` (
   `id_slug` int(11) NOT NULL AUTO_INCREMENT,
   `slug` varchar(255) COLLATE latin1_general_ci DEFAULT NULL,
   `complemento` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id_slug`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
+  `id_noticia` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id_slug`),
+  KEY `FK_slug_noticia` (`id_noticia`),
+  CONSTRAINT `FK_slug_noticia` FOREIGN KEY (`id_noticia`) REFERENCES `noticia` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1 COLLATE=latin1_general_ci;
 
--- Copiando dados para a tabela crud_sem_lacos.slug: ~3 rows (aproximadamente)
+-- Copiando dados para a tabela crud_sem_lacos.slug: ~5 rows (aproximadamente)
 /*!40000 ALTER TABLE `slug` DISABLE KEYS */;
-REPLACE INTO `slug` (`id_slug`, `slug`, `complemento`) VALUES
-	(1, 'testando-complemento-de-slug', 2),
-	(2, 'testando-complemento', NULL),
-	(3, 'testando-complemento-de-slug', NULL);
+REPLACE INTO `slug` (`id_slug`, `slug`, `complemento`, `id_noticia`) VALUES
+	(1, 'testando-complemento-de-slug', 2, 6),
+	(2, 'testando-complemento', NULL, 5),
+	(3, 'testando-complemento-de-slug', NULL, 13);
 /*!40000 ALTER TABLE `slug` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;

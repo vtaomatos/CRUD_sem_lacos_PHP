@@ -46,7 +46,7 @@ $consulta = '
     FROM
         noticia n
     LEFT JOIN
-        slug s ON s.id_slug = n.id_slug
+        slug s ON s.id_noticia = n.id
     WHERE
         :condicao
 ';
@@ -97,8 +97,8 @@ $noticias = db_select($consulta, array(
                 <h1>Listagem de Notícias</h1>
             </div>
 
-            <br clear="both">
-            <br clear="both">
+                <br clear="both">
+                <br clear="both">
 
             <form class="offset-md-4 col-md-8">
                 <div class="clearfix filtro">

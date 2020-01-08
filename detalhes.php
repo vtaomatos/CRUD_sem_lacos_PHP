@@ -10,7 +10,7 @@ $sql = '
     FROM
         noticia n
     LEFT JOIN
-        slug s ON s.id_slug = n.id_slug
+        slug s ON s.id_noticia = n.id
     WHERE
         n.id = ":codigo"
 ';
