@@ -148,9 +148,6 @@ $noticia = db_select_one($sql, array(
                     $("#sug-slug").html("");
                 }
             });
-
-
-
         </script>
     </body>
 </html>
