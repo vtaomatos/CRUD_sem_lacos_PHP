@@ -161,14 +161,14 @@ function get_linhas($tabela, $configs, &$chaves=array()){
     return !empty($saida);
 }
 
-function get_cabeacalho(&$tabela) {
+function get_cabecalho(&$tabela) {
     $cabecalho = array_shift($tabela);
     $array_cabecalho = array(count($cabecalho), $cabecalho);
     return $array_cabecalho;
 }
 
 function monta_cabecalho(&$tabela) {
-    $cabecalho = get_cabeacalho($tabela);
+    $cabecalho = get_cabecalho($tabela);
     echo '<thead class="thead-dark">';
     echo '<tr>';
     array_map(function ($campo) {
@@ -257,4 +257,44 @@ function sf($string, $array) {
         $string = str_replace(":".$chave, $valor, $string);
     });
     return $string;
+}
+
+
+function monta_feed($campos,$tabela, $configs=array()) {
+    $keys_campos = array_keys($campos);
+    //Chave = campo chave que será passado como parametro para a tela de detalhes;
+    $chaves = array();
+    array_walk($tabela, function($valorPai, $chavePai) use ($keys_campos, &$tabela, &$chaves, $configs){
+        array_walk($valorPai, function($valor, $chave) use ($keys_campos, &$tabela, $chavePai, &$chaves, $configs){
+            if($chave == $configs['chave']){
+                $chaves[] = $valor;
+            }
+            if (!in_array($chave, $keys_campos)) {
+                unset($tabela[$chavePai][$chave]);
+            }
+        });
+    });
+    array_unshift($tabela, $campos);
+    echo '<div class="container" style="display:flex; flex-direction:row; justify-content:space-between;">';
+    $cabecalho = get_cabecalho($tabela);
+    if (empty(feed_corpo($tabela, $configs, $chaves))) {
+        echo '<h1 class="text-center"> Nenhum registro encontrado. <h1>';
+    }
+    echo '</div>';
+}
+
+function feed_corpo($tabela, $configs, &$chaves=array()){
+    $saida = array_map(function ($linha) use ($configs, &$chaves) {
+
+        $cartao = '<div class="red cartao" style="padding:10px; display:inline; flex-direction:row; height:'.$configs['cartao_altura'].'; width:'.$configs['cartao_largura'].'">';
+        $cartao .= "<h2 style='font-size:{$configs['cartao_titulo_tamanho']}'>{$linha[$configs['cartao_titulo']]}</h2>";
+        $cartao .= '<br clear="both">';
+        $cartao .= "<h3 style='font-size:{$configs['cartao_descricao_tamanho']}'>{$linha[$configs['cartao_descricao']]}</h3>";
+        // $cartao += "<h4>{$linha[$configs['cartao_slug']]}</h4>";
+        $cartao .= '</div>';
+        echo $cartao;
+        return $cartao;
+    }, $tabela);
+
+    return !empty($saida);
 }
