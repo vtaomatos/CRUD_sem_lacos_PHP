@@ -46,7 +46,7 @@ $consulta = '
     FROM
         noticia n
     LEFT JOIN
-        slug s ON s.id_noticia = n.id
+        slug s ON s.id_slug = n.id_slug
     WHERE
         :condicao
 ';
@@ -86,6 +86,9 @@ $noticias = db_select($consulta, array(
             #mostrar-todos{
                 display:none;
             }
+            .cartao{
+                background-color: red;
+            }
         </style>
     </head>
     <body>
@@ -97,8 +100,8 @@ $noticias = db_select($consulta, array(
                 <h1>Listagem de Notícias</h1>
             </div>
 
-                <br clear="both">
-                <br clear="both">
+            <br clear="both">
+            <br clear="both">
 
             <form class="offset-md-4 col-md-8">
                 <div class="clearfix filtro">
@@ -113,13 +116,26 @@ $noticias = db_select($consulta, array(
             <br clear="both">
 
             <div class="div-tabela">
-                <?php monta_tabela(array(
+                <?php 
+                
+                $estrutura = array(
+
+                );
+                
+                monta_feed(array(
                     'titulo' => 'Título',
                     'descricao' => 'Descrição',
                     'slug' => 'Slug'
                 ), $noticias,array(
                     'title' => "Título: :titulo \n\nDescrição: :descricao",
-                    'chave' => 'id_slug'
+                    'chave' => 'id_slug',
+                    'cartao_largura' => '300px',
+                    'cartao_altura' => '300px',
+                    'cartao_titulo' => 'titulo',
+                    'cartao_titulo_tamanho' => '2em',
+                    'cartao_descricao' => 'descricao',
+                    'cartao_descricao_tamanho' => '1em',
+
                 )); ?>
             </div>
 
