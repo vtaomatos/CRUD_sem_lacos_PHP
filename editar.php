@@ -46,6 +46,18 @@ $noticia = db_select_one($sql, array(
                 flex-direction:row;
                 justify-content:space-between;
             }
+            .input-upload {
+                visibility:hidden
+            }
+            #upload-icone{
+                width:60px;
+                cursor:pointer;
+            }
+            #label-upload{
+                display:flex;
+                flex-direction:row;
+                justify-content: flex-end;
+            }
         </style>
     </head>
     <body>
@@ -62,6 +74,10 @@ $noticia = db_select_one($sql, array(
             <?php } ?>
 
             <form action="noticiaCRUD.php" method="POST">
+                <label id="label-upload">
+                    <img id="upload-icone" src="/upload_image.png">
+                    <input type="file" class="input-upload">
+                </label>
                 <div class="form-group">
                     <label for="titulo">Título:</label>
                     <input type="text" id="titulo" name="titulo" onkeyup="gera_slug(this.value);" value="<?php echo $noticia['titulo'] ; ?>" class="form-control col-md-12" maxLength="255">
@@ -79,7 +95,6 @@ $noticia = db_select_one($sql, array(
                     <button type="button" id="aceita-sugestao" class="btn btn-primary col-md-3" disabled>Aceitar sugestão de slug</button>
                 </div>
                 <input type="hidden" name="id" value="<?php echo $noticia['id']; ?>">
-                <input type="hidden" name="id_slug" value="<?php echo $noticia['id_slug'] ; ?>">
 
                 <br clear="both">
                 <br clear="both">
