@@ -119,7 +119,7 @@ $noticias = db_select($consulta, array(
                     'slug' => 'Slug'
                 ), $noticias,array(
                     'title' => "Título: :titulo \n\nDescrição: :descricao",
-                    'chave' => 'id_slug'
+                    'chave' => 'id'
                 )); ?>
             </div>
 
