@@ -17,7 +17,7 @@ if (!empty($_POST['cadastrar'])) {
         SELECT
             COUNT(*) total
         FROM
-            slug
+            noticia
         WHERE
             :where
     ';
@@ -34,7 +34,6 @@ if (!empty($_POST['cadastrar'])) {
     $slugs = db_select_one($sql, array(
         'slug' => $slug,
         'ocorrencia' => $ocorrencias,
-        'id_slug' => $id_slug
     ));
 
     if (!empty($slugs['total'])) {
@@ -46,14 +45,15 @@ if (!empty($_POST['cadastrar'])) {
     $insert = array(
         'titulo' => $_POST['titulo'],
         'descricao' => $_POST['descricao'],
+        'slug' => $_POST['slug'],
     );
+
+    if (!empty($complemento)) {
+        $insert['complemento'] = $ocorrencias;
+    }
+
     $cd_noticia = db_insert('noticia', $insert, true);
     
-    $insert = array (
-        'slug' => $_POST['slug'],
-        'id_noticia' => $cd_noticia
-    );
-    db_insert('slug', $insert, true);
     header("location:/index.php");
     exit;
 }
@@ -62,17 +62,14 @@ if (!empty($_POST['pesquisar'])) {
     $sql = '
         SELECT
             n.*,
-            s.*,
-            IF(CONCAT(s.slug,"-",s.complemento) IS NOT NULL, CONCAT(s.slug,"-",s.complemento), s.slug) slug
+            IF(CONCAT(n.slug,"-",n.complemento) IS NOT NULL, CONCAT(n.slug,"-",n.complemento), n.slug) slug
         FROM
             noticia n
-        INNER JOIN
-            slug s ON s.id_noticia = n.id
         WHERE
             n.id LIKE "%'.$_POST['termo'].'%" OR
             n.titulo LIKE "%'.$_POST['termo'].'%" OR
             n.descricao LIKE "%'.$_POST['termo'].'%" OR 
-            s.slug LIKE "%'.$_POST['termo'].'%"
+            n.slug LIKE "%'.$_POST['termo'].'%"
     ';
     $resultados = db_select($sql);
     monta_tabela(array(
@@ -86,7 +83,6 @@ if (!empty($_POST['pesquisar'])) {
 }
 
 if (!empty($_POST['editar'])) {
-    $id_slug = $_POST['id_slug'];
     $slug = $_POST['slug'];
     $slug = explode("-", $slug);
     $ultimo = $slug[count($slug)-1];
@@ -102,14 +98,14 @@ if (!empty($_POST['editar'])) {
         SELECT
             COUNT(*) total
         FROM
-            slug
+            noticia
         WHERE
             :where
     ';
     $where =  array(
         0 => 'slug = ":slug"',
         1 => ($ocorrencias == null) ? 'complemento IS NULL' : 'complemento = ":ocorrencia"',
-        2 => 'id_slug != :id_slug'
+        2 => 'id != :id'
     );
     $where = join(' AND ', $where);
     $sql = sf($sql, array(
@@ -119,7 +115,7 @@ if (!empty($_POST['editar'])) {
     $slugs = db_select_one($sql, array(
         'slug' => $slug,
         'ocorrencia' => $ocorrencias,
-        'id_slug' => $id_slug
+        'id' => $_POST['id']
     ));
 
     if (!empty($slugs['total'])) {
@@ -131,37 +127,12 @@ if (!empty($_POST['editar'])) {
     $update = array(
         'titulo' => $_POST['titulo'],
         'descricao' => $_POST['descricao'],
-        // 'id_slug' => $id_slug
+        'slug' => $slug,
     );
     $where = array(
         'id' => $_POST['id']
     );
-
-    db_update('noticia', $update, $where);
-    
-    if (!empty($_POST['id_slug'])) {
-        $where = array(
-            'id_slug' => $id_slug
-        );
-        $update = array(
-            'slug' => $slug,
-            'id_noticia' => $_POST['id']
-        );
-        if ($ocorrencias != null) {
-            $update['complemento'] =  $ocorrencias;
-        } else {
-            $update['complemento'] = NULL;
-        }
-
-        db_update('slug', $update, $where, true);
-    } else {
-        $insert = array(
-            'slug' => $slug,
-            'id_noticia' => $_POST['id']
-        );
-        $id_slug = db_insert('slug', $insert, true);
-    }
-    
+    db_update('noticia', $update, $where);    
     header("location:/detalhes.php?codigo={$_POST['id']}");
 }
 
@@ -189,7 +160,7 @@ if (!empty($_GET['consultar_slug'])) {
         SELECT
             COUNT(*) total
         FROM
-            slug
+            noticia
         WHERE
             :where
     ';
@@ -206,7 +177,6 @@ if (!empty($_GET['consultar_slug'])) {
     $slugs = db_select_one($sql, array(
         'slug' => $slug,
         'ocorrencia' => $ocorrencias,
-        // 'id_slug' => $id_slug
     ));
 
     if (!empty($slugs['total'])) {
@@ -214,7 +184,7 @@ if (!empty($_GET['consultar_slug'])) {
             SELECT
                 COALESCE(MAX(complemento),0)+1 proximo
             FROM
-                slug
+                noticia
             WHERE
                 slug = ":slug"
             LIMIT
@@ -227,5 +197,4 @@ if (!empty($_GET['consultar_slug'])) {
         $slug = $slug."-".$complemento['proximo'];
     }
     exit($slug);
-
 }

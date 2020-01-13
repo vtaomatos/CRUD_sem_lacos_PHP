@@ -31,8 +31,8 @@ if (!empty($_POST['pesquisar'])) {
         }
         $slug = join("-", $slug);
 
-        $condicao[] = 's.slug LIKE "%'.$slug.'%"';
-        $condicao[] = 's.complemento LIKE "%'.$ocorrencias.'%"';
+        $condicao[] = 'n.slug LIKE "%'.$slug.'%"';
+        $condicao[] = 'n.complemento LIKE "%'.$ocorrencias.'%"';
         $filtrado = true;
     }
 }
@@ -41,12 +41,9 @@ $condicao = join(" AND ", $condicao);
 $consulta = '
     SELECT 
         n.*,
-        s.*,
-        IF(CONCAT(s.slug,"-",s.complemento) IS NOT NULL, CONCAT(s.slug,"-",s.complemento), s.slug) slug
+        IF(CONCAT(n.slug,"-",n.complemento) IS NOT NULL, CONCAT(n.slug,"-",n.complemento), n.slug) slug
     FROM
         noticia n
-    LEFT JOIN
-        slug s ON s.id_noticia = n.id
     WHERE
         :condicao
 ';
@@ -148,7 +145,7 @@ $noticias = db_select($consulta, array(
                 $("#mostrar-todos").show();
             }
             var noticia = {
-                pesquisa : function (texto) {
+                pesquisa : function  (texto) {
                     var request = jQuery.ajax({
                         method: "POST",
                         url: "noticiaCRUD.php",

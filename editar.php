@@ -6,12 +6,9 @@ $sql = '
         n.id,
         n.titulo,
         n.descricao,
-        IF(CONCAT(s.slug,"-",s.complemento) IS NOT NULL, CONCAT(s.slug,"-",s.complemento), s.slug) slug,
-        s.id_slug
+        IF(CONCAT(n.slug,"-",n.complemento) IS NOT NULL, CONCAT(n.slug,"-",n.complemento), n.slug) slug
     FROM
         noticia n
-    LEFT JOIN 
-        slug s ON s.id_noticia = n.id
     WHERE
         id = :codigo
 ';

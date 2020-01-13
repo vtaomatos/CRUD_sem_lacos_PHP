@@ -11,6 +11,8 @@ require_once('functions.php');
         </title>
 
         <link rel="stylesheet" href="bootstrap/dist/css/bootstrap.min.css" />
+        <script src="js/jquery-3.4.1.js"></script>
+
         <style>
             .div-titulo{
                 display: flex;
@@ -47,7 +49,7 @@ require_once('functions.php');
             <form action="noticiaCRUD.php" method="POST">
                 <div class="form-group">
                     <label for="titulo">Título:</label>
-                    <input type="text" id="titulo" name="titulo" class="form-control col-md-12" maxLength="255">
+                    <input type="text" id="titulo" name="titulo" class="form-control col-md-12" onkeyup="gera_slug(this.value);" maxLength="255">
                 </div>
                 <div class="form-group">
                     <label for="descricao">Descrição:</label>
@@ -61,8 +63,6 @@ require_once('functions.php');
                     <span class="sug-slug-title">Sugestão de Slug: </span><span id="sug-slug" class="sug-slug-description"></span>
                     <button type="button" id="aceita-sugestao" class="btn btn-primary col-md-3" disabled>Aceitar sugestão de slug</button>
                 </div>
-                <input type="hidden" name="id" value="<?php echo $noticia['id']; ?>">
-                <input type="hidden" name="id_slug" value="<?php echo $noticia['id_slug'] ; ?>">
                 
                 <br clear="both">
                 <br clear="both">
@@ -105,7 +105,7 @@ require_once('functions.php');
                 
                 };
             }
-            function gera_slug (valor) {
+            function gera_slug(valor) {
                 var request = jQuery.ajax({
                     method: "GET",
                     url: "noticiaCRUD.php",
@@ -122,7 +122,7 @@ require_once('functions.php');
             }
 
             $("#aceita-sugestao").click(function () {
-                if (confirm("Alterar o slug?")) {
+                if (confirm("Preencher campo slug?")) {
                     $("#slug").val($("#sug-slug").html());
                     $("#sug-slug").html("");
                 }
