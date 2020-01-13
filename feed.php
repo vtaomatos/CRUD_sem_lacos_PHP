@@ -125,14 +125,13 @@ $noticias = db_select($consulta, array(
                     'slug' => 'Slug'
                 ), $noticias,array(
                     'title' => "Título: :titulo \n\nDescrição: :descricao",
-                    'chave' => 'id_slug',
+                    'chave' => 'id',
                     'cartao_largura' => '300px',
                     'cartao_altura' => '300px',
                     'cartao_titulo' => 'titulo',
                     'cartao_titulo_tamanho' => '2em',
                     'cartao_descricao' => 'descricao',
                     'cartao_descricao_tamanho' => '1em',
-
                 )); ?>
             </div>
 

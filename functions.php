@@ -275,6 +275,20 @@ function monta_feed($campos,$tabela, $configs=array()) {
         });
     });
     array_unshift($tabela, $campos);
+    echo '
+        <style>
+            .cartao:hover{
+                transform:scale(1.1);
+                cursor:pointer;
+            }
+            .cartao {
+                transition:0.3s ease-in;
+            }
+            .out-cartao {
+                overflow:hidden;
+            }
+        </style>
+    ';
     echo '<div style="width:100%; min-height:1200px; display:flex; flex-direction:row; justify-content:center; flex-wrap:wrap;">';
     $cabecalho = get_cabecalho($tabela);
     if (empty(feed_corpo($tabela, $configs, $chaves))) {
@@ -285,31 +299,29 @@ function monta_feed($campos,$tabela, $configs=array()) {
 
 function feed_corpo($tabela, $configs, &$chaves=array()){
     $saida = array_map(function ($linha) use ($configs, &$chaves) {
-
+        $valor = array_shift($chaves);
         $cartao = '
-            <style>
-                .cartao:hover {
-                    padding:40px;
-                }
-                .cartao {
-                    transition:0.3s ease-in;
-                    padding:10px;
-                }
-            </style>
+            <div class="out-cartao"
+            style="
+                height:'.$configs['cartao_altura'].';
+                width:'.$configs['cartao_largura'].';
+                margin:20px;
+            "
+            onclick="window.location.href = \'detalhes.php?codigo='.$valor.'\'"
+            >
 
             <div class="red cartao text-center" style="
                 background-image: linear-gradient(to right, rgba(255,255,255,.7) , rgba(0,0,0,.3)), url(/imagem.jpg);
-                margin:20px;
-                display:inline;
-                flex-direction:row;
                 height:'.$configs['cartao_altura'].';
-                width:'.$configs['cartao_largura'].'
+                width:'.$configs['cartao_largura'].';
+                padding:20px;
             ">
         ';
         $cartao .= "<h2 style='font-size:{$configs['cartao_titulo_tamanho']}'>{$linha[$configs['cartao_titulo']]}</h2>";
         $cartao .= '<br clear="both">';
         $cartao .= "<h3 style='font-size:{$configs['cartao_descricao_tamanho']}'>{$linha[$configs['cartao_descricao']]}</h3>";
         // $cartao += "<h4>{$linha[$configs['cartao_slug']]}</h4>";
+        $cartao .= '</div>';
         $cartao .= '</div>';
         echo $cartao;
         return $cartao;
