@@ -31,6 +31,20 @@ require_once('functions.php');
                 flex-direction:row;
                 justify-content:space-between;
             }
+            .input-upload {
+                visibility:hidden;
+                width:0;
+            }
+            #upload-icone{
+                width:60px;
+                cursor:pointer;
+                transition: .5s;
+            }
+            #label-upload{
+                display:flex;
+                flex-direction:row;
+                justify-content: flex-end;
+            }
         </style>
     </head>
     <body>
@@ -47,6 +61,10 @@ require_once('functions.php');
             <?php } ?>
 
             <form action="noticiaCRUD.php" method="POST">
+                <label id="label-upload">
+                    <img id="upload-icone" src="/upload_image.png">
+                    <input type="file" class="input-upload">
+                </label>
                 <div class="form-group">
                     <label for="titulo">Título:</label>
                     <input type="text" id="titulo" name="titulo" class="form-control col-md-12" onkeyup="gera_slug(this.value);" maxLength="255">

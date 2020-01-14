@@ -47,11 +47,13 @@ $noticia = db_select_one($sql, array(
                 justify-content:space-between;
             }
             .input-upload {
-                visibility:hidden
+                visibility:hidden;
+                width:0;
             }
             #upload-icone{
                 width:60px;
                 cursor:pointer;
+                transition: .5s;
             }
             #label-upload{
                 display:flex;
@@ -84,7 +86,7 @@ $noticia = db_select_one($sql, array(
                 </div>
                 <div class="form-group">
                     <label for="descricao">Descrição:</label>
-                    <textarea name="descricao" id="descricao" class="form-control col-md-12" maxLength="4000" rows="7"><?php echo $noticia['descricao'] ; ?></textarea>
+                    <textarea name="descricao" id="descricao" class="form-control col-md-12" maxLength="4000" rows="7"><?php echo htmlentities($noticia['descricao']); ?></textarea>
                 </div>
                 <div class="form-group">
                     <label for="slug">Slug:</label>

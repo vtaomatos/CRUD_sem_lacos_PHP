@@ -123,10 +123,12 @@ if (!empty($_POST['editar'])) {
         header("location:editar.php?codigo={$_POST['id']}&msg=$msg");
         exit;
     }
+
+    $descricao = $_POST['descricao'];
     
     $update = array(
         'titulo' => $_POST['titulo'],
-        'descricao' => $_POST['descricao'],
+        'descricao' => $descricao,
         'slug' => $slug,
     );
     $where = array(
